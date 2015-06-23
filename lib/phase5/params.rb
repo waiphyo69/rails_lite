@@ -12,6 +12,12 @@ module Phase5
     def initialize(req, route_params = {})
       @req = req
       @params = route_params
+      if @req.body
+        parse_www_encoded_form(@req.body)
+      elsif @req.unparsed_uri.include?('?')
+        unparsed_uri = req.unparsed_uri.split('?').last
+        parse_www_encoded_form(unparsed_uri)
+      end
     end
 
     def [](key)
@@ -37,7 +43,6 @@ module Phase5
         parse_key(key.to_sym, val)
       end
     end
-
     # this should return an array
     # user[address][street] should return ['user', 'address', 'street']
     def parse_key(key, val)
